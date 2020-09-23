@@ -54,10 +54,10 @@ def extraerArticulosAPI(response_json):
 
 articulos1 = list(extraerArticulosAPI(response_json))
 
-import feedparser    
+import feedparser
+import random
 
 feedsPolitica = [
-        { 'diario': 'Gestión', 'urlfeed': "http://espresso.gestion.pe/feed/politica"},
         { 'diario': 'El Comercio', 'urlfeed': "https://archivo.elcomercio.pe/feed/politica.xml" },
         { 'diario': 'La República', 'urlfeed': "https://larepublica.pe/rss/politica.xml?outputType=rss" },
         { 'diario': 'Peru.com', 'urlfeed': "https://peru.com/feed/actualidad/politicas" },
@@ -66,7 +66,6 @@ feedsPolitica = [
 feedsEconomia = [
         { 'diario': 'Gestión', 'urlfeed': "http://espresso.gestion.pe/feed/politica"},
     ]
-
 
 def extraerArticulos(feeds):
     for feed in feeds:
@@ -84,10 +83,10 @@ def extraerArticulos(feeds):
             yield articulo(article)
             
 articulos = list(extraerArticulos(feedsPolitica))
-
+random.shuffle(articulos)
 
 def homepage(request):
-    return render(request, "main/inicio.html", {"news":articulos1,}) #recibe dato, nomplantilla y diccionario de variables(opcional)
+    return render(request, "main/inicio.html", {"news":articulos,}) #recibe dato, nomplantilla y diccionario de variables(opcional)
     #return HttpResponse("Hola mundo") #por ahora retorna una http
 
 def registro(request):
