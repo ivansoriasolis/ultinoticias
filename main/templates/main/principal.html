@@ -16,23 +16,19 @@
     <title>Noticias</title>
 </head>
 <body>
-    <nav>
-        <div class="nav-wrapper">
-          <a href="#!" class="brand-logo"><i class="material-icons">cloud</i>Mabe news</a>
-          <ul class="right hide-on-med-and-down">
-            <li><a href="#"><i class="material-icons">search</i></a></li>
-            <li><a href="#"><i class="material-icons">view_module</i></a></li>
-            <li><a href="#"><i class="material-icons">refresh</i></a></li>
-            <li><a href="#"><i class="material-icons">more_vert</i></a></li>
-          </ul>
-        </div>
-      </nav>
 
+    {% include "main/includes/navbar.html" %}
+
+
+      <div class="container">
+            <br>
 {% block content %}
 {% endblock %}
+        </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> -->
+{% include 'main/includes/mensajes.html' %}
 
-</body>
 <script src="{% static 'tynimce/css/prism.js' %}"></script>
+</body>
 </html>

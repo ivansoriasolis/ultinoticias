@@ -1,5 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login, logout, authenticate
+from django.contrib import messages
+
 from .models import Curso
 # Create your views here.
 
@@ -85,3 +89,24 @@ articulos = list(extraerArticulos(feedsPolitica))
 def homepage(request):
     return render(request, "main/inicio.html", {"news":articulos1,}) #recibe dato, nomplantilla y diccionario de variables(opcional)
     #return HttpResponse("Hola mundo") #por ahora retorna una http
+
+def registro(request):
+    form = UserCreationForm
+
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        form.fields['username'].help_text = None
+        form.fields['password1'].help_text = None
+        form.fields['password2'].help_text = None
+        if form.is_valid():
+            usuario = form.save()
+            nombre_usuario = form.cleaned_data.get('username') #obtiene el nombre del usuario
+            messages.success(request, f"Nueva Cuenta Creada : {nombre_usuario}") #crea un mensaje para el usuario
+            login(request, usuario)
+            messages.info(request, f"Has sido logueado como {nombre_usuario}")
+            return redirect("main:homepage")
+        else:
+            for msg in form.error_messages:
+                messages.error(request, f"{msg}: form.error_messages[msg]")
+    
+    return render(request, "main/registro.html", {"form":form})
