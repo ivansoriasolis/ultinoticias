@@ -120,8 +120,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
-MEDIA_ROOT = '/home/ivansoriasolis/misitio/media'
+MEDIA_ROOT = '/home/Ultinoticias/misitio/media'
 MEDIA_URL = '/media/'
-STATIC_ROOT = '/home/ivansoriasolis/misitio/static'
+STATIC_ROOT = '/home/Ultinoticias/misitio/static'
 STATIC_URL = '/static/'
 STATIC_URL = '/static/'

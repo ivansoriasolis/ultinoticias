@@ -48,7 +48,7 @@ def extraerArticulosAPI(response_json):
     for a in response_json['articles']:
         yield(articulo(a))
 
-articulos = list(extraerArticulosAPI(response_json))
+articulos1 = list(extraerArticulosAPI(response_json))
 
 import feedparser    
 
@@ -57,7 +57,11 @@ feedsPolitica = [
         { 'diario': 'El Comercio', 'urlfeed': "https://archivo.elcomercio.pe/feed/politica.xml" },
         { 'diario': 'La República', 'urlfeed': "https://larepublica.pe/rss/politica.xml?outputType=rss" },
         { 'diario': 'Peru.com', 'urlfeed': "https://peru.com/feed/actualidad/politicas" },
-        ]
+    ]
+
+feedsEconomia = [
+        { 'diario': 'Gestión', 'urlfeed': "http://espresso.gestion.pe/feed/politica"},
+    ]
 
 
 def extraerArticulos(feeds):
@@ -79,5 +83,5 @@ articulos = list(extraerArticulos(feedsPolitica))
 
 
 def homepage(request):
-    return render(request, "main/inicio.html", {"news":articulos,}) #recibe dato, nomplantilla y diccionario de variables(opcional)
+    return render(request, "main/inicio.html", {"news":articulos1,}) #recibe dato, nomplantilla y diccionario de variables(opcional)
     #return HttpResponse("Hola mundo") #por ahora retorna una http
