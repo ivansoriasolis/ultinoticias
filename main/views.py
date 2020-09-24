@@ -1,3 +1,7 @@
+import requests
+import pprint
+import random
+import feedparser
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
@@ -11,32 +15,30 @@ app_name = "main"
 
 Mensaje = "holaaaaaaa"
 
-import pprint 
-import requests 
-
 
 secret = "5f039f3f100a42cdbc4aa9661082475f"
 
-# Define the endpoint 
+# Define the endpoint
 url = 'http://newsapi.org/v2/everything?'
 
-# Specify the query and 
-# number of returns 
-parameters = { 
-	'q': 'rebrote', # query phrase 
-    'pageSize': 100, # maximum is 100 
- 	'apiKey': secret, # your own API key 
+# Specify the query and
+# number of returns
+parameters = {
+    'q': 'rebrote',  # query phrase
+    'pageSize': 100,  # maximum is 100
+    'apiKey': secret,  # your own API key
     'language': 'es',
 
-} 
+}
 
-# Make the request 
-response = requests.get(url, 
-						params = parameters) 
+# Make the request
+response = requests.get(url,
+                        params=parameters)
 
-# Convert the response to 
-# JSON format and pretty print it 
+# Convert the response to
+# JSON format and pretty print it
 response_json = response.json()
+
 
 class articulo:
     def __init__(self, article):
@@ -48,24 +50,58 @@ class articulo:
         self.autor = article['author']
         self.nombre = article['source']['name']
 
+
 def extraerArticulosAPI(response_json):
     for a in response_json['articles']:
         yield(articulo(a))
 
+
 articulos1 = list(extraerArticulosAPI(response_json))
 
-import feedparser
-import random
 
 feedsPolitica = [
-        { 'diario': 'El Comercio', 'urlfeed': "https://archivo.elcomercio.pe/feed/politica.xml" },
-        { 'diario': 'La República', 'urlfeed': "https://larepublica.pe/rss/politica.xml?outputType=rss" },
-        { 'diario': 'Peru.com', 'urlfeed': "https://peru.com/feed/actualidad/politicas" },
-    ]
+    {'diario': 'El Comercio',
+        'urlfeed': "https://elcomercio.pe/arcio/rss/category/politica/"},
+    {'diario': 'La República',
+        'urlfeed': "https://larepublica.pe/rss/politica.xml?outputType=rss"},
+    {'diario': 'Peru.com',
+        'urlfeed': "https://peru.com/feed/actualidad/politicas"},
+    {'diario': 'Diario Correo',
+        'urlfeed': "https://diariocorreo.pe/arcio/rss/category/politica/?ref=dcr"},
+    # {'diario': 'El Perfil',
+    #     'urlfeed': "https://elperfil.pe/politica/feed/"},
+]
+
+feedsSalud = [
+    {'diario': 'Peru.com',
+        'urlfeed': "https://peru.com/feed/estilo-de-vida/salud"},
+    {'diario': 'Diario Correo',
+        'urlfeed': "https://diariocorreo.pe/arcio/rss/category/salud/?ref=dcr"},
+    {'diario': 'La República',
+        'urlfeed': "https://larepublica.pe/rss/salud.xml?outputType=rss"},
+    # {'diario': 'El Perfil',
+    #     'urlfeed': "https://elperfil.pe/salud/feed/"},
+]
 
 feedsEconomia = [
-        { 'diario': 'Gestión', 'urlfeed': "http://espresso.gestion.pe/feed/politica"},
-    ]
+    {'diario': 'Peru.com',
+        'urlfeed': "https://peru.com/feed/actualidad/economia-y-finanzas"},
+    {'diario': 'Diario Correo',
+        'urlfeed': "https://diariocorreo.pe/arcio/rss/category/economia/?ref=dcr"},
+    {'diario': 'La República',
+        'urlfeed': "https://larepublica.pe/rss/economia.xml?outputType=rss"},
+    # {'diario': 'El Perfil',
+    #     'urlfeed': "https://elperfil.pe/economia/feed/"},
+    {'diario': 'El Comercio',
+        'urlfeed': "https://elcomercio.pe/arcio/rss/category/economia/"},
+]
+
+# feedsAgricultura = [
+#     http://www.fao.org/americas/noticias/rss/feed/es /?key= 33
+#     https://elperfil.pe/actualidad/feed /
+
+# ]
+
 
 def extraerArticulos(feeds):
     for feed in feeds:
@@ -73,21 +109,25 @@ def extraerArticulos(feeds):
         for item in rss['entries']:
             article = dict()
             article['title'] = item['title']
-            article['description']= item['summary']
+            article['description'] = item['summary']
             article['url'] = item['link']
             article['urlToImage'] = '#'
             article['publishedAt'] = item['published']
             article['author'] = ''
-            article['source']= dict() 
-            article['source']['name']= feed['diario']
+            article['source'] = dict()
+            article['source']['name'] = feed['diario']
             yield articulo(article)
-            
+
+
 articulos = list(extraerArticulos(feedsPolitica))
-random.shuffle(articulos)
+
 
 def homepage(request):
-    return render(request, "main/inicio.html", {"news":articulos,}) #recibe dato, nomplantilla y diccionario de variables(opcional)
-    #return HttpResponse("Hola mundo") #por ahora retorna una http
+    # recibe dato, nomplantilla y diccionario de variables(opcional)
+    random.shuffle(articulos)
+    return render(request, "main/inicio.html", {"news": articulos, })
+    # return HttpResponse("Hola mundo") #por ahora retorna una http
+
 
 def registro(request):
     form = UserCreationForm
@@ -99,13 +139,16 @@ def registro(request):
         form.fields['password2'].help_text = None
         if form.is_valid():
             usuario = form.save()
-            nombre_usuario = form.cleaned_data.get('username') #obtiene el nombre del usuario
-            messages.success(request, f"Nueva Cuenta Creada : {nombre_usuario}") #crea un mensaje para el usuario
+            nombre_usuario = form.cleaned_data.get(
+                'username')  # obtiene el nombre del usuario
+            # crea un mensaje para el usuario
+            messages.success(
+                request, f"Nueva Cuenta Creada : {nombre_usuario}")
             login(request, usuario)
             messages.info(request, f"Has sido logueado como {nombre_usuario}")
             return redirect("main:homepage")
         else:
             for msg in form.error_messages:
                 messages.error(request, f"{msg}: form.error_messages[msg]")
-    
-    return render(request, "main/registro.html", {"form":form})
+
+    return render(request, "main/registro.html", {"form": form})

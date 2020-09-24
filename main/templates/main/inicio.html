@@ -12,7 +12,10 @@
         <p style="font-size:14px; color:goldenrod;">{{new.nombre}}</p>
         <p style="font-size: 10px">{{new.fecha}}</p>
         <p>{{new.descripcion|safe}}</p>
-        <a class="btn-floating halfway-fab waves-effect waves-light red"><i class="material-icons">add</i></a>
+        <a class="btn-floating halfway-fab waves-effect waves-light red" 
+          onclick="this.className='btn-floating halfway-fab waves-effect waves-light green'; return false;">
+          <i class="material-icons">done</i>
+        </a>
       </div>
       <div class="card-action">
         <a href="{{ new.url }}">Ver noticia...</a>
