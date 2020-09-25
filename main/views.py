@@ -4,7 +4,7 @@ import random
 import feedparser
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, forms
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 
@@ -119,24 +119,46 @@ def extraerArticulos(feeds):
             yield articulo(article)
 
 
-articulos = list(extraerArticulos(feedsPolitica))
+articulosPolitica = list(extraerArticulos(feedsPolitica))
+articulosSalud = list(extraerArticulos(feedsSalud))
+articulosEconomia = list(extraerArticulos(feedsEconomia))
+articulos = articulosPolitica + articulosSalud + articulosEconomia
+
+categorias = [
+    {'nomcat': 'politica', 'textcat': 'Política'},
+    {'nomcat': 'economia', 'textcat': 'Economía'},
+    {'nomcat': 'salud', 'textcat': 'Salud'},
+]
 
 
 def homepage(request):
     # recibe dato, nomplantilla y diccionario de variables(opcional)
     random.shuffle(articulos)
-    return render(request, "main/inicio.html", {"news": articulos, })
+    return render(request, "main/inicio.html", {"news": articulos, "activa": "todos", "categorias": categorias, })
     # return HttpResponse("Hola mundo") #por ahora retorna una http
 
 
-def registro(request):
-    form = UserCreationForm
+def politica(request):
+    random.shuffle(articulosPolitica)
+    return render(request, "main/inicio.html", {"news": articulosPolitica, "categoria": "politica", "activa": "politica", "categorias": categorias, })
 
+
+def economia(request):
+    random.shuffle(articulosEconomia)
+    return render(request, "main/inicio.html", {"news": articulosEconomia, "categoria": "economia", "activa": "economia", "categorias": categorias, })
+
+
+def salud(request):
+    random.shuffle(articulosSalud)
+    return render(request, "main/inicio.html", {"news": articulosSalud, "categoria": "salud", "activa": "salud", "categorias": categorias, })
+
+
+def registro(request):
+    form = UserCreationForm()
+    forms.CharField
     if request.method == "POST":
         form = UserCreationForm(request.POST)
-        form.fields['username'].help_text = None
-        form.fields['password1'].help_text = None
-        form.fields['password2'].help_text = None
+
         if form.is_valid():
             usuario = form.save()
             nombre_usuario = form.cleaned_data.get(
@@ -149,6 +171,33 @@ def registro(request):
             return redirect("main:homepage")
         else:
             for msg in form.error_messages:
-                messages.error(request, f"{msg}: form.error_messages[msg]")
+                messages.error(request, f"{msg}: {form.error_messages[msg]}")
 
     return render(request, "main/registro.html", {"form": form})
+
+
+def logout_request(request):
+    logout(request)
+    messages.info(request, "Saliste exitosamente")
+    return redirect("main:homepage")
+
+
+def login_request(request):
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            usuario = form.cleaned_data.get('username')
+            contraseña = form.cleaned_data.get('password')
+            user = authenticate(username=usuario, password=contraseña)
+
+            if user is not None:
+                login(request, user)
+                messages.info(request, f"Estas logueado como {usuario}")
+                return redirect("main:homepage")
+            else:
+                messages.error(request, "Usuario o contraseña equivoacada")
+        else:
+            messages.error(request, "Usuario o contraseña equivoacada")
+
+    form = AuthenticationForm()
+    return render(request, "main/login.html", {"form": form})

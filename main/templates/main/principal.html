@@ -12,7 +12,17 @@
 
       <!--Let browser know website is optimized for mobile-->
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <style>
+          body {
+              display: flex;
+              min-height: 100vh;
+              flex-direction: column;
+          }
 
+          main {
+              flex: 1 0 auto;
+          }
+      </style>
     <title>Noticias</title>
 </head>
 <body>
@@ -30,5 +40,6 @@
 {% include 'main/includes/mensajes.html' %}
 
 <script src="{% static 'tynimce/css/prism.js' %}"></script>
+{% include 'main/includes/footer.html' %}
 </body>
 </html>
