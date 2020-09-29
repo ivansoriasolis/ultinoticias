@@ -1,3 +1,7 @@
+import unicodedata
+from sklearn.metrics.pairwise import linear_kernel
+from sklearn.feature_extraction.text import TfidfVectorizer
+import pandas as pd
 import requests
 import pprint
 import random
@@ -42,6 +46,7 @@ response_json = response.json()
 
 class articulo:
     def __init__(self, article):
+        self.id = hash(article['title']) % 1000000
         self.titulo = article['title']
         self.descripcion = article['description']
         self.url = article['url']
@@ -124,33 +129,96 @@ articulosSalud = list(extraerArticulos(feedsSalud))
 articulosEconomia = list(extraerArticulos(feedsEconomia))
 articulos = articulosPolitica + articulosSalud + articulosEconomia
 
+
+f = open("datos.csv", "w", encoding="utf-8")
+f.write('id,description\n')
+
+
+def normalizatexto(texto):
+    return unicodedata.normalize('NFKD', texto).encode('ASCII', 'ignore').strip().lower()
+
+
+for articulo in articulos:
+    linea = "" + str(articulo.id) + ",\"" + articulo.titulo + \
+        "-" + articulo.descripcion + "\"\n"
+    f.write(linea)
+
+f.close()
+
+
 categorias = [
     {'nomcat': 'politica', 'textcat': 'Política'},
     {'nomcat': 'economia', 'textcat': 'Economía'},
     {'nomcat': 'salud', 'textcat': 'Salud'},
+    {'nomcat': 'recomendados', 'textcat': 'Recomendados para ti'},
 ]
+
+
+ds = pd.read_csv("datos.csv", usecols=["id", "description"], encoding="latin")
+
+tf = TfidfVectorizer(analyzer='word', ngram_range=(1, 3),
+                     min_df=0, stop_words='english')
+tfidf_matrix = tf.fit_transform(ds['description'])
+
+cosine_similarities = linear_kernel(tfidf_matrix, tfidf_matrix)
+
+results = {}
+
+for idx, row in ds.iterrows():
+    similar_indices = cosine_similarities[idx].argsort()[:-100:-1]
+    similar_items = [(cosine_similarities[idx][i], ds['id'][i])
+                     for i in similar_indices]
+
+    results[row['id']] = similar_items[1:]
+
+
+def item(id):
+    return ds.loc[ds['id'] == id]['description'].tolist()[0].split(' - ')[0]
+
+
+def recommend(item_id, num):
+    recs = results[item_id][:num]
+    return recs
 
 
 def homepage(request):
     # recibe dato, nomplantilla y diccionario de variables(opcional)
-    random.shuffle(articulos)
-    return render(request, "main/inicio.html", {"news": articulos, "activa": "todos", "categorias": categorias, })
+    # random.shuffle(articulos)
+    return render(request, "main/inicio.html", {"news": articulos, "activa": "recomendados", "categorias": categorias, })
     # return HttpResponse("Hola mundo") #por ahora retorna una http
 
 
 def politica(request):
-    random.shuffle(articulosPolitica)
+    # random.shuffle(articulosPolitica)
     return render(request, "main/inicio.html", {"news": articulosPolitica, "categoria": "politica", "activa": "politica", "categorias": categorias, })
 
 
 def economia(request):
-    random.shuffle(articulosEconomia)
+    # random.shuffle(articulosEconomia)
     return render(request, "main/inicio.html", {"news": articulosEconomia, "categoria": "economia", "activa": "economia", "categorias": categorias, })
 
 
 def salud(request):
-    random.shuffle(articulosSalud)
+    # random.shuffle(articulosSalud)
     return render(request, "main/inicio.html", {"news": articulosSalud, "categoria": "salud", "activa": "salud", "categorias": categorias, })
+
+
+def busqueda(request):
+    textobuscado = normalizatexto(request.GET['search'])
+    print(textobuscado)
+    articulosBusqueda = [
+        articulo for articulo in articulos if textobuscado in normalizatexto(articulo.titulo)]
+    return render(request, "main/inicio.html", {"news": articulosBusqueda, "categoria": "Busqueda", "activa": "Busqueda", "categorias": categorias, })
+
+
+def recomendados(request):
+    elegido = random.randint(0, len(articulos))
+    id_elegido = articulos[elegido].id
+    recomendaciones = recommend(item_id=id_elegido, num=10)
+    ids_recomendados = [item[1] for item in recomendaciones]
+    articulosrecomendados = [
+        articulo for articulo in articulos if articulo.id in ids_recomendados]
+    return render(request, "main/inicio.html", {"news": articulosrecomendados, "categoria": "recomendados", "activa": "recomendados", "categorias": categorias, })
 
 
 def registro(request):

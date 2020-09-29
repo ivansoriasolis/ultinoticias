@@ -1,39 +1,75 @@
 <nav class="nav-extended">
-    <div class="nav-wrapper">
-      <a href="#" class="brand-logo center"><i class="material-icons">cloud</i>Ultinoticias</a>
-      <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-      <ul id="nav-mobile" class="right hide-on-med-and-down">
-        <li><a href="/">Inicio</a></li>
-        {% if user.is_authenticated %}
-            <li><a href="/user">{{user.username}}</a></li>
-            <li><a href="/logout">Salir</a></li>  
-        {% else %}
-            <li><a href="/registro">Registro</a></li>
-            <li><a href="/login">Login</a></li>         
-        {% endif %}
+  <div class="nav-wrapper">
+    <a href="#!" class="brand-logo center"><i class="material-icons">cloud</i>Ultinoticias</a>
+    <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+    <ul id="nav-mobile" class="right hide-on-med-and-down">
+    
+      <li><a href="/">Inicio</a></li>
+      {% if user.is_authenticated %}
+      <li><a href="/user">{{user.username}}</a></li>
+      <li><a href="/logout">Salir</a></li>
+      {% else %}
+      <li><a href="/registro">Registro</a></li>
+      <li><a href="/login">Login</a></li>
+      {% endif %}
+    </ul>
+  </div>
 
-      </ul>
-    </div>
-    <div class="nav-content">
-      <ul class="tabs tabs-transparent">
+
+
+  <div class="nav-content">
+    <ul class="tabs tabs-transparent">
       {% for categoria in categorias %}
-        {% if activa == categoria.nomcat %} 
-        <li class="tab"><a class="active" href="/politica">{{ categoria.textcat }}</a></li>
-        {% else %}
-        <li class="tab"><a href="/{{ categoria.nomcat }}">{{ categoria.textcat }}</a></li>
-        {% endif %}
+      {% if activa == categoria.nomcat %}
+      <li class="tab"><a class="active" href="/politica">{{ categoria.textcat }}</a></li>
+      {% else %}
+      <li class="tab"><a href="/{{ categoria.nomcat }}">{{ categoria.textcat }}</a></li>
+      {% endif %}
       {% endfor %}
-      </ul>
-    </div>
-  </nav>
+      <li class="tab">
+      <div class="row" id="topbarsearch">
+        <form action="{% url 'main:busqueda' %}" method="get">
+              <div class="input-field col s6 s12">
+              <i class="white-text material-icons prefix">search</i>
+              <input id="search" type="search" name="search" required >
+              <i class="material-icons">close</i>
+            </div>
+          </form>
+      </div>
+      </li>
+    </ul>
+  </div>
+</nav>
 
-  <!-- <ul class="sidenav" id="mobile-demo">
+<ul class="sidenav" id="mobile-demo">
+  <li><a href="/">Inicio</a></li>
+  {% if user.is_authenticated %}
+  <li><a href="/user">{{user.username}}</a></li>
+  <li><a href="/logout">Salir</a></li>
+  {% else %}
+  <li><a href="/registro">Registro</a></li>
+  <li><a href="/login">Login</a></li>
+  {% endif %}
+</ul>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var elems = document.querySelectorAll('.sidenav');
+    var instances = M.Sidenav.init(elems, options);
+  });
+
+  // Or with jQuery
+
+  $(document).ready(function () {
+    $('.sidenav').sidenav();
+  });
+</script>
+<!-- <ul class="sidenav" id="mobile-demo">
     <li><a href="sass.html">Sass</a></li>
     <li><a href="badges.html">Components</a></li>
     <li><a href="collapsible.html">JavaScript</a></li>
   </ul> -->
 
-  <!-- <div id="test1" class="col s12">Test 1</div>
+<!-- <div id="test1" class="col s12">Test 1</div>
   <div id="test2" class="col s12">Test 2</div>
   <div id="test3" class="col s12">Test 3</div>
   <div id="test4" class="col s12">Test 4</div> -->

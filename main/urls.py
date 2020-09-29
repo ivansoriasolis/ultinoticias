@@ -11,4 +11,6 @@ urlpatterns = [
     path('politica/', views.politica, name="politica"),
     path('salud/', views.salud, name="salud"),
     path('economia/', views.economia, name="economia"),
+    path('busqueda/', views.busqueda, name="busqueda"),
+    path('recomendados/', views.recomendados, name="redomendados"),
 ]
