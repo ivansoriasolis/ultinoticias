@@ -4,9 +4,9 @@
     <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
     <ul id="nav-mobile" class="right hide-on-med-and-down">
     
-      <li><a href="/">Inicio</a></li>
+      <li><a href="/recomendados">Inicio</a></li>
       {% if user.is_authenticated %}
-      <li><a href="/user">{{user.username}}</a></li>
+      <li><a id="nomusuario" href="/user">{{user.username}}</a></li>
       <li><a href="/logout">Salir</a></li>
       {% else %}
       <li><a href="/registro">Registro</a></li>
@@ -21,17 +21,29 @@
     <ul class="tabs tabs-transparent">
       {% for categoria in categorias %}
       {% if activa == categoria.nomcat %}
-      <li class="tab"><a class="active" href="/politica">{{ categoria.textcat }}</a></li>
+      <li class="tab"><b><a class="active" href="/{{ categoria.nomcat }}">{{ categoria.textcat }}</a></b></li>
       {% else %}
       <li class="tab"><a href="/{{ categoria.nomcat }}">{{ categoria.textcat }}</a></li>
       {% endif %}
       {% endfor %}
+      
+      {% if user.is_authenticated %}
+      
+      {% if activa == "recomendados" %}
+        <li class="tab"><b><a class="active" href="/recomendados">Recomendados para {{user.username}} </a></b></li>
+      {% else %}
+        <li class="tab"><a href="/recomendados">Recomendados para {{user.username}} </a></li>
+      {% endif %}
+        
+      {% endif %}
+        
+
       <li class="tab">
       <div class="row" id="topbarsearch">
         <form action="{% url 'main:busqueda' %}" method="get">
               <div class="input-field col s6 s12">
-              <i class="white-text material-icons prefix">search</i>
               <input id="search" type="search" name="search" required >
+              <i class="white-text material-icons prefix">search</i>
               <i class="material-icons">close</i>
             </div>
           </form>
