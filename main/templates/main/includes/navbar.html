@@ -21,7 +21,7 @@
     <ul class="tabs tabs-transparent">
       {% for categoria in categorias %}
       {% if activa == categoria.nomcat %}
-      <li class="tab"><b><a class="active" href="/{{ categoria.nomcat }}">{{ categoria.textcat }}</a></b></li>
+      <li class="tab"><b><a class="z-depth-1 active" href="/{{ categoria.nomcat }}">{{ categoria.textcat }}</a></b></li>
       {% else %}
       <li class="tab"><a href="/{{ categoria.nomcat }}">{{ categoria.textcat }}</a></li>
       {% endif %}
@@ -30,7 +30,7 @@
       {% if user.is_authenticated %}
       
       {% if activa == "recomendados" %}
-        <li class="tab"><b><a class="active" href="/recomendados">Recomendados para {{user.username}} </a></b></li>
+        <li class="tab"><b><a class="z-depth-1 active" href="/recomendados">Recomendados para {{user.username}} </a></b></li>
       {% else %}
         <li class="tab"><a href="/recomendados">Recomendados para {{user.username}} </a></li>
       {% endif %}

@@ -161,18 +161,18 @@ articulos.sort(key=lambda x: x.fecha, reverse=True)
 
 f = open("datos.csv", "w", encoding="utf-8")
 f.write('id,description\n')
+for articulo in articulos:
+    linea = "" + str(articulo.id) + ",\"" + articulo.titulo + \
+        "-" + articulo.descripcion + "\"\n"
+    f.write(linea)
+f.close()
 
 
 def normalizatexto(texto):
     return unicodedata.normalize('NFKD', texto).encode('ASCII', 'ignore').strip().lower()
 
 
-for articulo in articulos:
-    linea = "" + str(articulo.id) + ",\"" + articulo.titulo + \
-        "-" + articulo.descripcion + "\"\n"
-    f.write(linea)
 
-f.close()
 
 
 categorias = [
@@ -232,8 +232,6 @@ def politica(request):
         usuario=usuario_actual)
     preferencias = [
         preferencia.id_noticia for preferencia in consultaPreferencias]
-    print("PREFERENCIAS", preferencias)
-    print("ARTICULO", [a.id for a in articulosPolitica])
     return render(request, "main/inicio.html", {"news": articulosPolitica, "categoria": "politica", "activa": "politica", "categorias": categorias, "preferencias": preferencias, })
 
 
@@ -244,8 +242,6 @@ def economia(request):
         usuario=usuario_actual)
     preferencias = [
         preferencia.id_noticia for preferencia in consultaPreferencias]
-    print("PREFERENCIAS", preferencias)
-    print("ARTICULO", articulosEconomia[0].id)
     return render(request, "main/inicio.html", {"news": articulosEconomia, "categoria": "economia", "activa": "economia", "categorias": categorias, "preferencias": preferencias, })
 
 
@@ -256,8 +252,6 @@ def salud(request):
         usuario=usuario_actual)
     preferencias = [
         preferencia.id_noticia for preferencia in consultaPreferencias]
-    print("PREFERENCIAS", preferencias)
-    print("ARTICULO", articulosSalud)
     return render(request, "main/inicio.html", {"news": articulosSalud, "categoria": "salud", "activa": "salud", "categorias": categorias, "preferencias": preferencias, })
 
 
@@ -268,7 +262,6 @@ def busqueda(request):
     preferencias = [
         preferencia.id_noticia for preferencia in consultaPreferencias]
     textobuscado = normalizatexto(request.GET['search'])
-    print(textobuscado)
     articulosBusqueda = [
         articulo for articulo in articulos if textobuscado in normalizatexto(articulo.titulo)]
     return render(request, "main/inicio.html", {"news": articulosBusqueda, "categoria": "Busqueda", "activa": "Busqueda", "categorias": categorias, "preferencias": preferencias, })
