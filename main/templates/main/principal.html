@@ -15,6 +15,7 @@
     <script>
         $(document).ready(function () {
             $(".btn-floating").click(function () {
+                boton = this;
                 $.ajax({
                     url: "{% url 'main:check' %}",
                     method: 'GET', // or another (GET), whatever you need
