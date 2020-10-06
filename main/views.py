@@ -172,9 +172,6 @@ def normalizatexto(texto):
     return unicodedata.normalize('NFKD', texto).encode('ASCII', 'ignore').strip().lower()
 
 
-
-
-
 categorias = [
     {'nomcat': 'politica', 'textcat': 'Política'},
     {'nomcat': 'economia', 'textcat': 'Economía'},
@@ -273,8 +270,12 @@ def recomendados(request):
         usuario=usuario_actual)
     preferencias = [
         preferencia.id_noticia for preferencia in consultaPreferencias]
-    elegido = random.randint(0, len(articulos))
-    id_elegido = articulos[elegido].id
+    idUltimaNoticia = preferencias[-1]
+    if idUltimaNoticia == None:
+        elegido = random.randint(0, len(articulos))
+        id_elegido = articulos[elegido].id
+    else:
+        id_elegido = idUltimaNoticia
     recomendaciones = recommend(item_id=id_elegido, num=10)
     ids_recomendados = [item[1] for item in recomendaciones]
     articulosrecomendados = [
@@ -294,6 +295,7 @@ def check(request):
         nuevocheck = Preferencia.objects.create(
             id_noticia=noticia, preferencia=True, usuario=usuario)
         nuevocheck.save()
+        print("NOTICIA:", noticia)
         return HttpResponse('true')
     consulta.delete()
     return HttpResponse('false')

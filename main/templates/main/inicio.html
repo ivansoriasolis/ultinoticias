@@ -29,11 +29,19 @@
         {% endif %}  
       </div>
       <div class="card-action">
-        <a href="{{ new.url }}" target="_blank" >Ver Noticia...</a>
+        <button data-target="visor" class="btn modal-trigger" enlace="{{new.url}}">Leer...</button>
+        {% comment %} <a id="aaa" href="#visor" class="modal-trigger" link="{{new.link}}" >Ver Noticia...</a> {% endcomment %}
       </div>
     </div>
   </div>
   {% endfor %}
 </div>
-
+<div id="visor" class="modal modal-fixed-footer">
+  <div class="modal-content">
+    <iframe id="framenoticia" src="https://www.google.com/" frameborder="0" style="width: 100%; height: 80%"></iframe>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="modal-close waves-effect waves-green btn-flat">Cerrar</a>
+  </div>
+</div>
 {% endblock %}

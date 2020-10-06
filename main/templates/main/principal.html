@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% load static %}
-      <!--Import Google Icon Font-->
-      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-      <!--Import materialize.css-->
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-      <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <!--Import materialize.css-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 
-        <script>
-        $(document).ready(function() {
-            $(".btn-floating").click(function() {  
-                boton = this;   
+    <script>
+        $(document).ready(function () {
+            $(".btn-floating").click(function () {
                 $.ajax({
                     url: "{% url 'main:check' %}",
                     method: 'GET', // or another (GET), whatever you need
@@ -23,52 +23,64 @@
                         click: true,
                         usuario: $("#nomusuario").text(),
                     },
-                    
-                    success: function (data) {  
+
+                    success: function (data) {
                         //alert(data);      
-                        if (data == 'true'){
-                            boton.className='btn-floating halfway-fab waves-effect waves-light green';
+                        if (data == 'true') {
+                            boton.className = 'btn-floating halfway-fab waves-effect waves-light green';
                         }
-                        if (data == 'false'){
-                            boton.className='btn-floating halfway-fab waves-effect waves-light red';
+                        if (data == 'false') {
+                            boton.className = 'btn-floating halfway-fab waves-effect waves-light red';
                         }
                     }
                 });
-                });
             });
-        </script>
 
-      <!--Let browser know website is optimized for mobile-->
-      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <style>
-          body {
-              display: flex;
-              min-height: 100vh;
-              flex-direction: column;
-          }
+            $(".modal-trigger").click(function () {
+                boton = this;
+                linknoticia = boton.getAttribute("enlace");
+                $("#framenoticia").attr("src", linknoticia);
+            });
 
-          main {
-              flex: 1 0 auto;
-          }
-      </style>
+            $(document).ready(function () {
+                $('.modal').modal();
+            });
+        });
+    </script>
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1 0 auto;
+        }
+    </style>
     <title>Ultinoticias</title>
 </head>
+
 <body>
-<header>
+    <header>
 
-    {% include "main/includes/navbar.html" %}
-</header>
-<main>
-      <div class="container">
+        {% include "main/includes/navbar.html" %}
+    </header>
+    <main>
+        <div class="container">
             <br>
-{% block content %}
-{% endblock %}
+            {% block content %}
+            {% endblock %}
         </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-{% include 'main/includes/mensajes.html' %}
-</main>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        {% include 'main/includes/mensajes.html' %}
+    </main>
 
-{% include 'main/includes/footer.html' %}
+    {% include 'main/includes/footer.html' %}
 
 </body>
+
 </html>
