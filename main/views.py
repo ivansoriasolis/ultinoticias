@@ -118,16 +118,17 @@ def extraerArticulos(feeds):
         rss = feedparser.parse(feed['urlfeed'])
         for item in rss['entries']:
             article = dict()
-            article['title'] = item['title']
-            article['description'] = item['summary']
-            article['url'] = item['link']
-            article['urlToImage'] = '#'
-            article['publishedAt'] = datetime.strptime(
-                item['published'][5:25], '%d %b %Y %H:%M:%S')
-            article['author'] = ''
-            article['source'] = dict()
-            article['source']['name'] = feed['diario']
-            yield articulo(article)
+            if 'title' in item:
+                article['title'] = item['title']
+                article['description'] = item['summary']
+                article['url'] = item['link']
+                article['urlToImage'] = '#'
+                article['publishedAt'] = datetime.strptime(
+                    item['published'][5:25], '%d %b %Y %H:%M:%S')
+                article['author'] = ''
+                article['source'] = dict()
+                article['source']['name'] = feed['diario']
+                yield articulo(article)
 
 
 articulosPolitica = list(extraerArticulos(feedsPolitica))
