@@ -35,8 +35,15 @@ class Preferencia(models.Model):
 
 
 class Fuente(models.Model):
+    CATEGORIAS = (
+        ('P', 'Politica'),
+        ('S', 'Salud'),
+        ('E', 'Econpmia'),
+    )
     diario = models.CharField(max_length=50)
-    url = models.TextField
+    url = models.TextField(max_length=250)
+    categoria = models.CharField(max_length=1, choices=CATEGORIAS)
+    activo = models.BooleanField(default=False)
 
 
 # el modelo se debe instalar en settings.py
