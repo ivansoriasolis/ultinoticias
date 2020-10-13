@@ -1,17 +1,32 @@
 from django.db import models  # hereda del modelo base de django
 from datetime import datetime
-
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 # Create your models here.
 
 
-class Curso(models.Model):
-    curso_titulo = models.CharField(max_length=200)
-    curso_contenido = models.TextField()
-    curso_publicado = models.DateTimeField(
-        "Fecha de publicacion", default=datetime.now())  # la hora y fecha actual por defecto
+class Perfil(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE)
+    organizacion = models.TextField(max_length=30, default="Ninguna")
+    email = models.EmailField(blank=False)
 
-    def __str__(self):
-        return self.curso_titulo
+    def __str__(self):  # version imprimible
+        return self.usuario.username
+
+
+def crear_usuario_perfil(sender, instance, created, **kwargs):
+    if created:
+        Perfil.objects.create(usuario=instance)
+
+
+def guardar_usuario_perfil(sender, instance, **kwargs):
+    instance.pefil.save()
+
+
+class Categoria(models.Model):
+    categoria = models.CharField(max_length=20)
+    descripcion = models.TextField()
 
 
 class Noticia(models.Model):

@@ -1,0 +1,16 @@
+{% extends "main/principal.html" %}
+
+{% block blockname %}
+    
+{% endblock blockname %}
+    Bienvenido
+{% block content %}
+
+    
+    {% if  user.is_authenticated %}
+        <h4>Hola {{ user.username }} </h4>
+    {% else %}
+        <a href="{% url 'sign_up' %}">Regístrate</a>
+    {% endif %}
+
+{% endblock %}

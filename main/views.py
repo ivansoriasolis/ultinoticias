@@ -11,11 +11,19 @@ import feedparser
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, forms
+from django.contrib.auth.models import User
+from django.contrib.auth.views import LoginView
+from django.views.generic import CreateView, TemplateView
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
+from django.utils import timezone
+# from django.core.urlresolvers import reverse_lazy
 import hashlib
 
-from .models import Preferencia, Noticia
+from .models import Preferencia, Noticia, Perfil
+
+from .forms import SignUpForm
+
 # Create your views here.
 
 app_name = "main"
@@ -68,7 +76,7 @@ def extraerArticulosAPI(response_json):
 
 articulos1 = list(extraerArticulosAPI(response_json))
 
-
+# Lista de páginas de noticias aceptadas, rss funciona, se debe revisar antes de agregar una fuente
 feedsPolitica = [
     {'diario': 'El Comercio',
         'urlfeed': "https://elcomercio.pe/arcio/rss/category/politica/"},
@@ -113,6 +121,34 @@ feedsEconomia = [
 # ]
 
 
+class SignUpView(CreateView):
+    '''
+    Esto crea la vista que muestra el formulario sobrecargado que acepta el email en base al modelo Perfil
+    '''
+    model = Perfil
+    form_class = SignUpForm
+    # sobrecargamos la función que valida el formulario para que si se ha ingresado los datos correctos se permita el longin
+
+    def form_valid(self, form):
+        form.save()
+        usuario = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password1')
+        usuario = authenticate(username=usuario, password=password)
+        login(self.request, usuario)
+        return redirect('/')
+
+
+class BienvenidaView(TemplateView):
+    '''
+    Muestra una ventana de bienvenida, con información personal del usuario
+    '''
+    template_name = 'main/bienvenida.html'
+
+
+class SignInView(LoginView):
+    template_name = 'main/login.html'
+
+
 def extraerArticulos(feeds):
     for feed in feeds:
         rss = feedparser.parse(feed['urlfeed'])
@@ -123,8 +159,8 @@ def extraerArticulos(feeds):
                 article['description'] = item['summary']
                 article['url'] = item['link']
                 article['urlToImage'] = '#'
-                article['publishedAt'] = datetime.strptime(
-                    item['published'][5:25], '%d %b %Y %H:%M:%S')
+                article['publishedAt'] = timezone.make_aware(datetime.strptime(
+                    item['published'][5:25], '%d %b %Y %H:%M:%S'), timezone.get_default_timezone())  # convierte la hora en formato utc
                 article['author'] = ''
                 article['source'] = dict()
                 article['source']['name'] = feed['diario']
@@ -136,23 +172,24 @@ articulosSalud = list(extraerArticulos(feedsSalud))
 articulosEconomia = list(extraerArticulos(feedsEconomia))
 articulos = articulosPolitica + articulosSalud + articulosEconomia
 
-# for articulo in articulos:
-#     consulta = Noticia.objects.filter(id_noticia=articulo.id)
-#     instancia = None
-#     if consulta.count() == 0:
-#         instancia = Noticia.objects.create(
-#             id_noticia=articulo.id,
-#             titulo=articulo.titulo,
-#             descripcion=articulo.descripcion,
-#             url=articulo.url,
-#             urlImagen=articulo.urlImagen,
-#             fecha=articulo.fecha,
-#             autor=articulo.autor,
-#             nombre=articulo.nombre,
-#         )
-#     else:
-#         instancia = consulta[0]
-#     instancia.save()
+# ----------- SECUENCIA PARA GRABAR TODOS LOS ARTICULOS ----------------
+for articulo in articulos:
+    consulta = Noticia.objects.filter(id_noticia=articulo.id)
+    instancia = None
+    if consulta.count() == 0:
+        instancia = Noticia.objects.create(
+            id_noticia=articulo.id,
+            titulo=articulo.titulo,
+            descripcion=articulo.descripcion,
+            url=articulo.url,
+            urlImagen=articulo.urlImagen,
+            fecha=articulo.fecha,
+            autor=articulo.autor,
+            nombre=articulo.nombre,
+        )
+    else:
+        instancia = consulta[0]
+    instancia.save()
 
 
 articulosPolitica.sort(key=lambda x: x.fecha, reverse=True)
@@ -271,7 +308,11 @@ def recomendados(request):
         usuario=usuario_actual)
     preferencias = [
         preferencia.id_noticia for preferencia in consultaPreferencias]
-    idUltimaNoticia = preferencias[-1]
+    if len(preferencias) == 0:  # si no hay preferencias, puede significar que nunca eligió nada o que no se ha logueado
+        idUltimaNoticia = None
+    else:
+        # si hay preferencias previas elegimos la última como referencia para la consulta
+        idUltimaNoticia = preferencias[-1]
     if idUltimaNoticia == None:
         elegido = random.randint(0, len(articulos))
         id_elegido = articulos[elegido].id
@@ -344,9 +385,9 @@ def login_request(request):
                 messages.info(request, f"Estas logueado como {usuario}")
                 return redirect("main:homepage")
             else:
-                messages.error(request, "Usuario o contraseña equivoacada")
+                messages.error(request, "Usuario o contraseña equivocada")
         else:
-            messages.error(request, "Usuario o contraseña equivoacada")
+            messages.error(request, "Usuario o contraseña equivocada")
 
     form = AuthenticationForm()
     return render(request, "main/login.html", {"form": form})
