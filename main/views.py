@@ -130,12 +130,25 @@ class SignUpView(CreateView):
     # sobrecargamos la función que valida el formulario para que si se ha ingresado los datos correctos se permita el longin
 
     def form_valid(self, form):
-        form.save()
-        usuario = form.cleaned_data.get('username')
-        password = form.cleaned_data.get('password1')
-        usuario = authenticate(username=usuario, password=password)
-        login(self.request, usuario)
-        return redirect('/')
+        if form.is_valid():
+            usuario = form.save()
+            nombre_usuario = form.cleaned_data.get(
+                'username')  # obtiene el nombre del usuario
+            # crea un mensaje para el usuario
+            messages.success(
+                self.request, f"Nueva Cuenta Creada : {nombre_usuario}")
+            login(self.request, usuario)
+            messages.info(
+                self.request, f"Has sido logueado como {nombre_usuario}")
+            return redirect("main:homepage")
+        else:
+            for msg in form.error_messages:
+                messages.error(
+                    self.request, f"{msg}: {form.error_messages[msg]}")
+        # usuario = authenticate(username=usuario, password=password)
+
+        # return redirect('/')
+        return render(request, "main/perfil_form.html", {"form": form})
 
 
 class BienvenidaView(TemplateView):
@@ -243,6 +256,10 @@ def item(id):
 def recommend(item_id, num):
     recs = results[item_id][:num]
     return recs
+
+
+def recuperacion(request):
+    return HttpResponse('Recuperado')
 
 
 def homepage(request):
