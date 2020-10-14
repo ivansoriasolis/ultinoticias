@@ -29,9 +29,11 @@
                         //alert(data);      
                         if (data == 'true') {
                             boton.className = 'btn-floating halfway-fab waves-effect waves-light green';
+                            $(boton).attr('onclick',  "M.toast({html: 'Preferencia eliminada', classes: 'red rounded', displayLength: 2000,})")
                         }
                         if (data == 'false') {
                             boton.className = 'btn-floating halfway-fab waves-effect waves-light red';
+                            $(boton).attr('onclick',  "M.toast({html: 'Preferencia guardada', classes: 'green rounded', displayLength: 2000,})")
                         }
                     }
                 });
@@ -75,10 +77,10 @@
             <br>
             {% block content %}
             {% endblock %}
-            <br>
-            {% include 'main/includes/mensajes.html'%}
+            
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+            {% include 'main/includes/mensajes.html' %}
         </div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
     </main>
 

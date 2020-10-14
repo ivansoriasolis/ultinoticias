@@ -6,7 +6,7 @@
     Recuperación
 {% block content %}
 
-    <h4>Se ha enviado su contraseña a su correo electrónico {{ user.username }} </h4>
-        Si no tiene una cuenta <a href="{% url 'sign_up' %}">Regístrate</a>
+    <p>Se ha enviado su contraseña a su correo electrónico {{ user.username }} </p>
+        Si no tiene una cuenta <a href="/registro">Regístrate</a>
 
 {% endblock %}

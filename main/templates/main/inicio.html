@@ -14,16 +14,16 @@
         <p>{{new.descripcion|safe|truncatewords:"40"}}</p>
         {% if user.is_authenticated %}
           {% if new.id in preferencias  %}
-            <a id="{{new.id}}" class="btn-floating halfway-fab waves-effect waves-light green" >
+            <a id="{{new.id}}" class="btn-floating halfway-fab waves-effect waves-light green" onclick="M.toast({html: 'Preferencia eliminada', classes: 'red rounded', displayLength: 2000,})" >
               <i class="material-icons">done</i>
             </a>
           {% else %}
-            <a id="{{new.id}}" class="btn-floating halfway-fab waves-effect waves-light red" >
+            <a id="{{new.id}}" class="btn-floating halfway-fab waves-effect waves-light red" onclick="M.toast({html: 'Preferencia guardada', classes: 'green rounded', displayLength: 2000,})">
               <i class="material-icons">done</i>
             </a>
           {% endif %}
         {% else %}
-          <a id="{{new.id}}" class="btn-floating halfway-fab waves-effect waves-light gray" disabled="true">
+          <a  class="btn-floating halfway-fab waves-effect waves-light grey"  onclick="M.toast({html: 'Inicie sesión para obtener recomendaciones', classes: 'rounded', displayLength: 2000,})">
             <i class="material-icons">done</i>
           </a>
         {% endif %}  

@@ -127,6 +127,7 @@ class SignUpView(CreateView):
     '''
     model = Perfil
     form_class = SignUpForm
+
     # sobrecargamos la función que valida el formulario para que si se ha ingresado los datos correctos se permita el longin
 
     def form_valid(self, form):
@@ -146,9 +147,14 @@ class SignUpView(CreateView):
                 messages.error(
                     self.request, f"{msg}: {form.error_messages[msg]}")
         # usuario = authenticate(username=usuario, password=password)
-
         # return redirect('/')
-        return render(request, "main/perfil_form.html", {"form": form})
+        return render(self.request, "main/perfil_form.html", {"form": form})
+
+    def form_invalid(self, form):
+        for msg in form.error_messages:
+            messages.error(
+                self.request, f"{msg}: {form.error_messages[msg]}")
+        return render(self.request, "main/perfil_form.html", {"form": form})
 
 
 class BienvenidaView(TemplateView):
@@ -259,7 +265,11 @@ def recommend(item_id, num):
 
 
 def recuperacion(request):
-    return HttpResponse('Recuperado')
+    return render(request, "main/recuperacion.html")
+
+
+def usuariorec(request):
+    return render(request, "main/usuariorec.html")
 
 
 def homepage(request):

@@ -18,7 +18,8 @@ urlpatterns = [
     path('recomendados/', views.recomendados, name="redomendados"),
     path('check/', views.check, name="check"),
     path('user/', views.BienvenidaView.as_view(), name="bienvenida"),
-    path('recuperacion/', views.recuperacion, name="recuperacion"),
+    path('login/recuperacion/', views.recuperacion, name="recuperacion"),
+    path('login/usuariorec/', views.usuariorec, name="usuariorec"),
 ]
 
 admin.site.site_header = 'Panel de administración de Ultinoticias'
